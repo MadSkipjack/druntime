@@ -3,24 +3,24 @@
 #    pkg_add -r gmake
 # and then run as gmake rather than make.
 
-ifeq (,$(OS))
-    OS:=$(shell uname)
-    ifeq (Darwin,$(OS))
-        OS:=osx
-    else
-        ifeq (Linux,$(OS))
-            OS:=linux
-        else
-            ifeq (FreeBSD,$(OS))
-                OS:=freebsd
-            else
-				ifeq (OpenBSD,$(OS))
-					OS:=openbsd
-				else
-					$(error Unrecognized or unsupported OS for uname: $(OS))
-				endif
-            endif
-        endif
+ifeq ($(OS),)
+    uname_S:=$(shell uname -s)
+
+    ifeq ($(uname_S),Darwin)
+         OS:=osx
+    endif
+    ifeq ($(uname_S),Linux)
+        OS:=linux
+    endif
+    ifeq ($(uname_S),FreeBSD)
+        OS:=freebsd
+    endif
+    ifeq ($(uname_S),OpenBSD)
+        OS:=openbsd
+    endif
+
+    ifeq ($(OS),)
+        $(error Unrecognized or unsupported OS for uname: $(uname_S))
     endif
 endif
 
@@ -31,10 +31,8 @@ IMPDIR=import
 
 MODEL=32
 
-#XXX fix -O -release: DFLAGS=-m$(MODEL) -O -release -inline -w -Isrc -Iimport -property
-#XXX fix -O -release: UDFLAGS=-m$(MODEL) -O -release -w -Isrc -Iimport -property
-DFLAGS=-m$(MODEL) -release -inline -w -Isrc -Iimport -property
-UDFLAGS=-m$(MODEL) -release -w -Isrc -Iimport -property
+DFLAGS=-m$(MODEL) -O -release -inline -w -Isrc -Iimport -property
+UDFLAGS=-m$(MODEL) -O -release -w -Isrc -Iimport -property
 DDOCFLAGS=-m$(MODEL) -c -w -o- -Isrc -Iimport
 
 CFLAGS=-m$(MODEL) -O
